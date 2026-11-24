@@ -1,0 +1,403 @@
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Kod Deneme Alanı - Code Playground</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #222;
+    color: #ddd;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+header {
+    background: #333;
+    padding: 15px;
+    text-align: center;
+    border-bottom: 1px solid #555;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 22px;
+    color: #fff;
+}
+
+header p {
+    margin: 6px 0 0;
+    color: #aaa;
+    font-size: 13px;
+}
+
+.container {
+    max-width: 1400px;
+    margin: auto;
+    padding: 15px;
+}
+
+/* KOD ALANLARI */
+
+.editors {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+}
+
+.editor-box {
+    background: #333;
+    border: 1px solid #555;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.editor-title {
+    background: #444;
+    padding: 9px 12px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+textarea {
+    width: 100%;
+    height: 300px;
+    display: block;
+
+    resize: vertical;
+
+    border: 0;
+    outline: none;
+
+    background: #181818;
+    color: #ddd;
+
+    padding: 12px;
+
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* BUTONLAR */
+
+.buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 15px 0;
+}
+
+button {
+    border: 0;
+    border-radius: 5px;
+
+    padding: 10px 18px;
+
+    background: #555;
+    color: white;
+
+    cursor: pointer;
+
+    font-size: 14px;
+}
+
+button:hover {
+    background: #666;
+}
+
+.run {
+    background: #357a38;
+}
+
+.run:hover {
+    background: #428c46;
+}
+
+.clear {
+    background: #704040;
+}
+
+.clear:hover {
+    background: #844949;
+}
+
+/* SONUÇ */
+
+.result-title {
+    background: #333;
+    border: 1px solid #555;
+    border-bottom: 0;
+
+    padding: 10px 12px;
+
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.result {
+    background: white;
+    border: 1px solid #555;
+
+    height: 500px;
+}
+
+#preview {
+    width: 100%;
+    height: 100%;
+
+    border: 0;
+
+    background: white;
+}
+
+/* ALT BİLGİ */
+
+.info {
+    margin-top: 10px;
+    color: #888;
+    font-size: 12px;
+}
+
+/* TELEFON */
+
+@media (max-width: 800px) {
+
+    .editors {
+        grid-template-columns: 1fr;
+    }
+
+    textarea {
+        height: 220px;
+    }
+
+    .result {
+        height: 450px;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+    <h1>🧪 Kod Deneme Alanı - Code Playground</h1>
+
+    <p>
+        HTML, CSS ve JavaScript kodlarını burada deneyebilirsin.- Try your HTML, CSS and JavaScript code here.
+    </p>
+
+</header>
+
+
+<div class="container">
+
+
+    <!-- KOD ALANLARI -->
+
+    <div class="editors">
+
+
+        <div class="editor-box">
+
+            <div class="editor-title">
+                HTML
+            </div>
+
+            <textarea id="htmlCode"
+placeholder="HTML kodunu buraya yapıştır... - Paste your HTML code here..."></textarea>
+
+        </div>
+
+
+
+        <div class="editor-box">
+
+            <div class="editor-title">
+                CSS
+            </div>
+
+            <textarea id="cssCode"
+placeholder="CSS kodunu buraya yapıştır... - Paste your CSS code here..."></textarea>
+
+        </div>
+
+
+
+        <div class="editor-box">
+
+            <div class="editor-title">
+                JavaScript
+            </div>
+
+            <textarea id="jsCode"
+placeholder="JavaScript kodunu buraya yapıştır... - Paste your JavaScript code here..."></textarea>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- BUTONLAR -->
+
+    <div class="buttons">
+
+        <button class="run" onclick="runCode()">
+    ▶ Çalıştır - Run
+</button>
+
+<button onclick="openNewWindow()">
+    ↗ Yeni Sekmede Aç - Open in New Tab
+</button>
+
+<button class="clear" onclick="clearCode()">
+    🗑 Temizle - Clear
+</button>
+
+    </div>
+
+
+
+    <!-- SONUÇ -->
+
+    <div class="result-title">
+        Önizleme - Preview
+    </div>
+
+    <div class="result">
+
+        <iframe id="preview" sandbox="allow-scripts"></iframe>
+
+    </div>
+
+
+
+    <div class="info">
+    Kodlar bu sayfada çalıştırılır. Ana projelerindeki dosyalara dokunmaz. - Code runs on this page. It does not affect your main project files.
+</div>
+
+
+</div>
+
+<script>
+
+
+
+
+function createCode() {
+    const html = document.getElementById("htmlCode").value;
+    const css = document.getElementById("cssCode").value;
+    const js = document.getElementById("jsCode").value;
+
+    return '<!DOCTYPE html>' +
+        '<html><head>' +
+        '<meta charset="UTF-8">' +
+        '<style>' + css + '</style>' +
+        '</head><body>' +
+        html +
+        '<scr' + 'ipt>' +
+        js +
+        '</scr' + 'ipt>' +
+        '</body></html>';
+}
+
+
+function runCode() {
+
+    const code = createCode();
+
+    const preview =
+        document.getElementById("preview");
+
+    preview.srcdoc = code;
+
+}
+
+
+
+function openNewWindow() {
+
+    const code = createCode();
+
+    const newWindow = window.open("", "_blank");
+
+    if (!newWindow) {
+     alert("Yeni sekme açılamadı. Tarayıcı açılır pencereyi engellemiş olabilir. - Could not open a new tab. Your browser may have blocked the pop-up."); return;
+    }
+
+    // Yeni sekmenin ana sayfayla bağlantısını kes
+    newWindow.opener = null;
+
+    // Yeni sekmede güvenli önizleme alanı oluştur
+    newWindow.document.open();
+
+    newWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Kod Önizleme - Code Preview</title>
+            <style>
+                html, body {
+                    margin: 0;
+                    width: 100%;
+                    height: 100%;
+                }
+
+                iframe {
+                    width: 100%;
+                    height: 100%;
+                    border: 0;
+                }
+            </style>
+        </head>
+        <body>
+            <iframe id="preview" sandbox="allow-scripts"></iframe>
+        </body>
+        </html>
+    `);
+
+    newWindow.document.close();
+
+    // Kullanıcı kodunu sandbox içindeki iframe'e gönder
+    newWindow.document.getElementById("preview").srcdoc = code;
+}
+
+
+
+function clearCode() {
+
+    if (!confirm("Tüm kod alanları temizlensin mi? - Clear all code fields?")) {
+    return;
+}
+
+    document.getElementById("htmlCode").value = "";
+
+    document.getElementById("cssCode").value = "";
+
+    document.getElementById("jsCode").value = "";
+
+    document.getElementById("preview").srcdoc = "";
+
+}
+
+
+
+
+</script>
+</body>
+</html>
+
