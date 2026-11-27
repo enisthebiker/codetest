@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -61,12 +60,25 @@ header p {
 }
 
 .editor-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
     background: #444;
     padding: 9px 12px;
     font-weight: bold;
     font-size: 14px;
 }
 
+.copy-btn {
+    padding: 5px 10px;
+    font-size: 12px;
+    background: #555;
+}
+
+.copy-btn:hover {
+    background: #357a38;
+}
 textarea {
     width: 100%;
     height: 300px;
@@ -184,7 +196,61 @@ button:hover {
     }
 
 }
+.console-panel {
+    margin-top: 15px;
+    background: #181818;
+    border: 1px solid #444;
+    border-radius: 6px;
+    overflow: hidden;
+}
 
+.console-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: #303030;
+    color: white;
+    font-size: 14px;
+}
+
+.console-title button {
+    padding: 5px 10px;
+    font-size: 12px;
+    background: #555;
+}
+
+.console-title button:hover {
+    background: #357a38;
+}
+
+.console-output {
+    max-height: 220px;
+    overflow-y: auto;
+    padding: 10px;
+    color: #ddd;
+    font-family: Consolas, monospace;
+    font-size: 12px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.console-line {
+    padding: 5px;
+    border-bottom: 1px solid #333;
+}
+
+.console-log {
+    color: #ddd;
+}
+
+.console-warn {
+    color: #ffd166;
+}
+
+.console-error {
+    color: #ff6b6b;
+}
 </style>
 </head>
 
@@ -212,8 +278,11 @@ button:hover {
         <div class="editor-box">
 
             <div class="editor-title">
-                HTML
-            </div>
+    <span>HTML</span>
+    <button class="copy-btn" onclick="copyCode('htmlCode', this)">
+        📋 Kopyala
+    </button>
+</div>
 
             <textarea id="htmlCode"
 placeholder="HTML kodunu buraya yapıştır... - Paste your HTML code here..."></textarea>
@@ -225,8 +294,11 @@ placeholder="HTML kodunu buraya yapıştır... - Paste your HTML code here..."><
         <div class="editor-box">
 
             <div class="editor-title">
-                CSS
-            </div>
+    <span>CSS</span>
+    <button class="copy-btn" onclick="copyCode('cssCode', this)">
+        📋 Kopyala
+    </button>
+</div>
 
             <textarea id="cssCode"
 placeholder="CSS kodunu buraya yapıştır... - Paste your CSS code here..."></textarea>
@@ -238,8 +310,11 @@ placeholder="CSS kodunu buraya yapıştır... - Paste your CSS code here..."></t
         <div class="editor-box">
 
             <div class="editor-title">
-                JavaScript
-            </div>
+    <span>JavaScript</span>
+    <button class="copy-btn" onclick="copyCode('jsCode', this)">
+        📋 Kopyala
+    </button>
+</div>
 
             <textarea id="jsCode"
 placeholder="JavaScript kodunu buraya yapıştır... - Paste your JavaScript code here..."></textarea>
@@ -262,7 +337,9 @@ placeholder="JavaScript kodunu buraya yapıştır... - Paste your JavaScript cod
 <button onclick="openNewWindow()">
     ↗ Yeni Sekmede Aç - Open in New Tab
 </button>
-
+<button onclick="copyAllCode(this)">
+    📋 Tam HTML'i Kopyala
+</button>
 <button class="clear" onclick="clearCode()">
     🗑 Temizle - Clear
 </button>
@@ -279,7 +356,7 @@ placeholder="JavaScript kodunu buraya yapıştır... - Paste your JavaScript cod
 
     <div class="result">
 
-        <iframe id="preview" sandbox="allow-scripts allow-same-origin"></iframe>
+        <iframe id="preview" sandbox="allow-scripts"></iframe>
 
     </div>
 
@@ -291,12 +368,99 @@ placeholder="JavaScript kodunu buraya yapıştır... - Paste your JavaScript cod
 
 
 </div>
+<div class="console-panel">
 
+    <div class="console-title">
+        <span>Console - Konsol</span>
+
+        <div>
+            <button id="toggleConsoleBtn" onclick="toggleConsole()">
+                Gizle
+            </button>
+
+            <button onclick="clearConsole()">
+                Temizle
+            </button>
+        </div>
+    </div>
+
+    <div id="consoleOutput" class="console-output">
+        Henüz mesaj yok.
+    </div>
+
+</div>
 <script>
 
 
+function saveCode() {
+    const data = {
+        html: document.getElementById("htmlCode").value,
+        css: document.getElementById("cssCode").value,
+        js: document.getElementById("jsCode").value
+    };
+
+    try {
+        localStorage.setItem("codePlaygroundDraft_v1", JSON.stringify(data));
+    } catch (error) {
+        console.warn("Kodlar kaydedilemedi:", error);
+    }
+}
 
 
+function loadSavedCode() {
+    try {
+        const saved = localStorage.getItem("codePlaygroundDraft_v1");
+
+        if (!saved) return;
+
+        const data = JSON.parse(saved);
+
+        document.getElementById("htmlCode").value = data.html || "";
+        document.getElementById("cssCode").value = data.css || "";
+        document.getElementById("jsCode").value = data.js || "";
+
+    } catch (error) {
+        console.warn("Kayıtlı kodlar yüklenemedi:", error);
+    }
+}
+async function copyCode(id, button) {
+
+    const code = document.getElementById(id).value;
+
+    try {
+        await navigator.clipboard.writeText(code);
+
+        const originalText = button.innerHTML;
+        button.innerHTML = "✓ Kopyalandı";
+
+        setTimeout(() => {
+            button.innerHTML = originalText;
+        }, 1500);
+
+    } catch (error) {
+        alert("Kopyalama başarısız oldu. - Copy failed.");
+    }
+}
+
+
+async function copyAllCode(button) {
+
+    try {
+        await navigator.clipboard.writeText(createCode());
+
+        const originalText = button.innerHTML;
+        button.innerHTML = "✓ Kopyalandı";
+
+        setTimeout(() => {
+            button.innerHTML = originalText;
+        }, 1500);
+
+    } catch (error) {
+        alert("Kopyalama başarısız oldu. - Copy failed.");
+    }
+}
+let previewJsCode = "";
+let previewJsStartLine = 0;
 function createCode() {
     const html = document.getElementById("htmlCode").value;
     const css = document.getElementById("cssCode").value;
@@ -308,22 +472,133 @@ function createCode() {
         '<style>' + css + '</style>' +
         '</head><body>' +
         html +
-        '<scr' + 'ipt>' +
+        '<scr' + 'ipt id="playground-user-code">' +
         js +
         '</scr' + 'ipt>' +
-        '</body></html>';
+               '</bo' + 'dy></html>';
 }
 
+function createConsoleBridge() {
 
+    return `
+        <script>
+        (function () {
+
+            function formatMessage(value) {
+                if (value instanceof Error) {
+                    return value.stack || value.message;
+                }
+
+                if (typeof value === "object" && value !== null) {
+                    try {
+                        return JSON.stringify(value, null, 2);
+                    } catch (error) {
+                        return "[Nesne görüntülenemedi]";
+                    }
+                }
+
+                return String(value);
+            }
+
+            ["log", "info", "warn", "error"].forEach(function (level) {
+
+                const original = console[level];
+
+                console[level] = function (...args) {
+
+                    parent.postMessage({
+                        type: "playground-console",
+                        level: level,
+                        message: args.map(formatMessage).join(" ")
+                    }, "*");
+
+                    original.apply(console, args);
+                };
+
+            });
+
+            window.addEventListener("error", function (event) {
+
+    parent.postMessage({
+        type: "playground-console",
+        level: "error",
+        message: event.message,
+        lineno: event.lineno
+    }, "*");
+
+});
+
+
+// Yakalanmamış Promise hatalarını da yakala
+window.addEventListener("unhandledrejection", function (event) {
+
+    parent.postMessage({
+        type: "playground-console",
+        level: "error",
+        message: "Promise hatası: " + formatMessage(event.reason)
+    }, "*");
+
+});
+
+        })();
+        <\/script>
+    `;
+}
+function receiveConsoleMessage(event) {
+
+    const preview = document.getElementById("preview");
+
+    // Mesajın bizim önizleme penceremizden geldiğini doğrula
+    if (event.source !== preview.contentWindow) return;
+
+    const data = event.data;
+
+    if (!data || data.type !== "playground-console") return;
+
+    const output = document.getElementById("consoleOutput");
+
+    let message = data.message;
+
+if (data.level === "error" && data.lineno && previewJsStartLine) {
+
+    const lineNumber = data.lineno - previewJsStartLine + 1;
+    const sourceLine = previewJsCode.split("\n")[lineNumber - 1];
+
+    if (lineNumber > 0 && sourceLine !== undefined) {
+        message += "\n" + sourceLine.trim();
+    }
+}
+
+const line = document.createElement("div");
+line.className = "console-line console-" + data.level;
+line.textContent = message;
+
+    output.appendChild(line);
+    output.scrollTop = output.scrollHeight;
+}
+
+window.addEventListener("message", receiveConsoleMessage);
 function runCode() {
 
     const code = createCode();
 
-    const preview =
-        document.getElementById("preview");
+    const codeWithConsole = code.replace(
+        "</head>",
+        createConsoleBridge() + "</head>"
+    );
+const marker = '<script id="playground-user-code">';
+const markerIndex = codeWithConsole.indexOf(marker);
 
-    preview.srcdoc = code;
+previewJsStartLine = markerIndex === -1
+    ? 0
+    : codeWithConsole.substring(0, markerIndex + marker.length).split("\n").length;
 
+previewJsCode = document.getElementById("jsCode").value;
+    const preview = document.getElementById("preview");
+
+    document.getElementById("consoleOutput").innerHTML = "";
+
+    preview.srcdoc = codeWithConsole;
 }
 
 
@@ -335,13 +610,12 @@ function openNewWindow() {
     const newWindow = window.open("", "_blank");
 
     if (!newWindow) {
-     alert("Yeni sekme açılamadı. Tarayıcı açılır pencereyi engellemiş olabilir. - Could not open a new tab. Your browser may have blocked the pop-up."); return;
+        alert("Yeni sekme açılamadı. Tarayıcı açılır pencereyi engellemiş olabilir. - Could not open a new tab. Your browser may have blocked the pop-up.");
+        return;
     }
 
-    // Yeni sekmenin ana sayfayla bağlantısını kes
     newWindow.opener = null;
 
-    // Yeni sekmede güvenli önizleme alanı oluştur
     newWindow.document.open();
 
     newWindow.document.write(`
@@ -365,17 +639,15 @@ function openNewWindow() {
             </style>
         </head>
         <body>
-            <iframe id="preview" sandbox="allow-scripts allow-same-origin"></iframe>
-        </body>
-        </html>
+            <iframe id="preview" sandbox="allow-scripts"><\/iframe>
+        <\/body>
+        <\/html>
     `);
 
     newWindow.document.close();
 
-    // Kullanıcı kodunu sandbox içindeki iframe'e gönder
     newWindow.document.getElementById("preview").srcdoc = code;
 }
-
 
 
 function clearCode() {
@@ -391,13 +663,32 @@ function clearCode() {
     document.getElementById("jsCode").value = "";
 
     document.getElementById("preview").srcdoc = "";
+    localStorage.removeItem("codePlaygroundDraft_v1");
+}
 
+// Sayfa açıldığında kayıtlı kodları yükle
+loadSavedCode();
+
+// Kod alanlarındaki değişiklikleri otomatik kaydet
+document.getElementById("htmlCode").addEventListener("input", saveCode);
+document.getElementById("cssCode").addEventListener("input", saveCode);
+document.getElementById("jsCode").addEventListener("input", saveCode);
+function toggleConsole() {
+
+    const output = document.getElementById("consoleOutput");
+    const button = document.getElementById("toggleConsoleBtn");
+
+    output.hidden = !output.hidden;
+
+    button.textContent = output.hidden ? "Göster" : "Gizle";
 }
 
 
+function clearConsole() {
 
+    document.getElementById("consoleOutput").innerHTML = "";
+}
 
 </script>
 </body>
 </html>
-
