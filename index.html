@@ -251,6 +251,90 @@ button:hover {
 .console-error {
     color: #ff6b6b;
 }
+/* CİHAZ ÖNİZLEME */
+
+.preview-controls {
+    display: flex;
+    gap: 8px;
+    margin: 10px 0;
+    flex-wrap: wrap;
+}
+
+.result {
+    display: flex;
+    justify-content: center;
+    overflow: auto;
+}
+
+#preview {
+    display: block;
+    flex-shrink: 0;
+    transition: width 0.2s, height 0.2s;
+}
+
+/* Tablet */
+.result.tablet {
+    height: 600px;
+}
+
+.result.tablet #preview {
+    width: 768px;
+    max-width: 100%;
+}
+
+/* Telefon */
+.result.phone {
+    height: 667px;
+}
+
+.result.phone #preview {
+    width: 375px;
+    max-width: 100%;
+}
+/* TAM EKRAN ÖNİZLEME */
+
+.result.fullscreen {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    background: #222;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.result.fullscreen #preview {
+    width: 100%;
+    height: 100%;
+}
+
+.result.fullscreen.tablet #preview {
+    width: 768px;
+    height: 100%;
+}
+
+.result.fullscreen.phone #preview {
+    width: 375px;
+    height: 100%;
+}
+
+.fullscreen-close {
+    display: none;
+}
+
+.result.fullscreen .fullscreen-close {
+    display: block;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 10000;
+    background: #704040;
+}
 </style>
 </head>
 
@@ -280,7 +364,7 @@ button:hover {
             <div class="editor-title">
     <span>HTML</span>
     <button class="copy-btn" onclick="copyCode('htmlCode', this)">
-        📋 Kopyala
+        📋 Kopyala - Copy
     </button>
 </div>
 
@@ -296,7 +380,7 @@ placeholder="HTML kodunu buraya yapıştır... - Paste your HTML code here..."><
             <div class="editor-title">
     <span>CSS</span>
     <button class="copy-btn" onclick="copyCode('cssCode', this)">
-        📋 Kopyala
+        📋 Kopyala - Copy
     </button>
 </div>
 
@@ -312,7 +396,7 @@ placeholder="CSS kodunu buraya yapıştır... - Paste your CSS code here..."></t
             <div class="editor-title">
     <span>JavaScript</span>
     <button class="copy-btn" onclick="copyCode('jsCode', this)">
-        📋 Kopyala
+        📋 Kopyala - Copy
     </button>
 </div>
 
@@ -338,7 +422,7 @@ placeholder="JavaScript kodunu buraya yapıştır... - Paste your JavaScript cod
     ↗ Yeni Sekmede Aç - Open in New Tab
 </button>
 <button onclick="copyAllCode(this)">
-    📋 Tam HTML'i Kopyala
+    📋 Tam HTML'i Kopyala - Copy Full HTML
 </button>
 <button class="clear" onclick="clearCode()">
     🗑 Temizle - Clear
@@ -353,12 +437,24 @@ placeholder="JavaScript kodunu buraya yapıştır... - Paste your JavaScript cod
     <div class="result-title">
         Önizleme - Preview
     </div>
+<div class="preview-controls">
 
+    <button onclick="previewSize('desktop')">🖥 Masaüstü - Desktop</button>
+    <button onclick="previewSize('tablet')">▣ Tablet</button>
+    <button onclick="previewSize('phone')">📱 Telefon - Phone</button>
+<button onclick="togglePreviewFullscreen()">
+    ⛶ Tam Ekran - Full Screen
+</button>
+</div>
     <div class="result">
 
-        <iframe id="preview" sandbox="allow-scripts"></iframe>
+    <button class="fullscreen-close" onclick="togglePreviewFullscreen()">
+        ✕ Kapat - Close
+    </button>
 
-    </div>
+    <iframe id="preview" sandbox="allow-scripts"></iframe>
+
+</div>
 
 
 
@@ -375,17 +471,17 @@ placeholder="JavaScript kodunu buraya yapıştır... - Paste your JavaScript cod
 
         <div>
             <button id="toggleConsoleBtn" onclick="toggleConsole()">
-                Gizle
+                Gizle - Hide
             </button>
 
             <button onclick="clearConsole()">
-                Temizle
+                Temizle -Clear
             </button>
         </div>
     </div>
 
     <div id="consoleOutput" class="console-output">
-        Henüz mesaj yok.
+        Henüz mesaj yok. - No messages yet.
     </div>
 
 </div>
@@ -680,7 +776,9 @@ function toggleConsole() {
 
     output.hidden = !output.hidden;
 
-    button.textContent = output.hidden ? "Göster" : "Gizle";
+    button.textContent = output.hidden
+    ? "Göster - Show"
+    : "Gizle - Hide";
 }
 
 
@@ -688,7 +786,27 @@ function clearConsole() {
 
     document.getElementById("consoleOutput").innerHTML = "";
 }
+function previewSize(size) {
 
+    const result = document.querySelector(".result");
+
+    result.classList.remove("tablet", "phone");
+
+    if (size === "tablet") {
+        result.classList.add("tablet");
+    }
+
+    else if (size === "phone") {
+        result.classList.add("phone");
+    }
+}
+function togglePreviewFullscreen() {
+
+    const result = document.querySelector(".result");
+
+    result.classList.toggle("fullscreen");
+
+}
 </script>
 </body>
 </html>
