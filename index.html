@@ -6,6 +6,9 @@
 
 <title>Kod Deneme Alanı - Code Playground</title>
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-darker.min.css">
+
 <style>
 
 * {
@@ -99,6 +102,25 @@ textarea {
     line-height: 1.5;
 }
 
+.CodeMirror {
+    height: 300px;
+    background: #181818;
+    color: #ddd;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 13px;
+    line-height: 1.5;
+}
+.CodeMirror-gutters {
+    background: #202020;
+    border-right: 1px solid #444;
+}
+.CodeMirror-linenumber {
+    color: #777;
+}
+.CodeMirror-cursor {
+    border-left: 1px solid #fff;
+}
+
 /* BUTONLAR */
 
 .buttons {
@@ -188,6 +210,10 @@ button:hover {
     }
 
     textarea {
+        height: 220px;
+    }
+
+    .CodeMirror {
         height: 220px;
     }
 
@@ -485,14 +511,38 @@ placeholder="JavaScript kodunu buraya yapıştır... - Paste your JavaScript cod
     </div>
 
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/selection/active-line.min.js"></script>
 <script>
-
+const editors = {
+    html: CodeMirror.fromTextArea(document.getElementById("htmlCode"), {
+        mode: "htmlmixed", theme: "material-darker", lineNumbers: true,
+        matchBrackets: true, autoCloseBrackets: true, styleActiveLine: true,
+        indentUnit: 2, tabSize: 2, lineWrapping: false
+    }),
+    css: CodeMirror.fromTextArea(document.getElementById("cssCode"), {
+        mode: "css", theme: "material-darker", lineNumbers: true,
+        matchBrackets: true, autoCloseBrackets: true, styleActiveLine: true,
+        indentUnit: 2, tabSize: 2, lineWrapping: false
+    }),
+    js: CodeMirror.fromTextArea(document.getElementById("jsCode"), {
+        mode: "javascript", theme: "material-darker", lineNumbers: true,
+        matchBrackets: true, autoCloseBrackets: true, styleActiveLine: true,
+        indentUnit: 2, tabSize: 2, lineWrapping: false
+    })
+};
 
 function saveCode() {
     const data = {
-        html: document.getElementById("htmlCode").value,
-        css: document.getElementById("cssCode").value,
-        js: document.getElementById("jsCode").value
+        html: editors.html.getValue(),
+        css: editors.css.getValue(),
+        js: editors.js.getValue()
     };
 
     try {
@@ -511,9 +561,9 @@ function loadSavedCode() {
 
         const data = JSON.parse(saved);
 
-        document.getElementById("htmlCode").value = data.html || "";
-        document.getElementById("cssCode").value = data.css || "";
-        document.getElementById("jsCode").value = data.js || "";
+        editors.html.setValue(data.html || "");
+        editors.css.setValue(data.css || "");
+        editors.js.setValue(data.js || "");
 
     } catch (error) {
         console.warn("Kayıtlı kodlar yüklenemedi:", error);
@@ -558,9 +608,9 @@ async function copyAllCode(button) {
 let previewJsCode = "";
 let previewJsStartLine = 0;
 function createCode() {
-    const html = document.getElementById("htmlCode").value;
-    const css = document.getElementById("cssCode").value;
-    const js = document.getElementById("jsCode").value;
+    const html = editors.html.getValue();
+    const css = editors.css.getValue();
+    const js = editors.js.getValue();
 
     return '<!DOCTYPE html>' +
         '<html><head>' +
@@ -689,7 +739,7 @@ previewJsStartLine = markerIndex === -1
     ? 0
     : codeWithConsole.substring(0, markerIndex + marker.length).split("\n").length;
 
-previewJsCode = document.getElementById("jsCode").value;
+previewJsCode = editors.js.getValue();
     const preview = document.getElementById("preview");
 
     document.getElementById("consoleOutput").innerHTML = "";
@@ -752,11 +802,11 @@ function clearCode() {
     return;
 }
 
-    document.getElementById("htmlCode").value = "";
+    editors.html.setValue("");
 
-    document.getElementById("cssCode").value = "";
+    editors.css.setValue("");
 
-    document.getElementById("jsCode").value = "";
+    editors.js.setValue("");
 
     document.getElementById("preview").srcdoc = "";
     localStorage.removeItem("codePlaygroundDraft_v1");
@@ -766,9 +816,9 @@ function clearCode() {
 loadSavedCode();
 
 // Kod alanlarındaki değişiklikleri otomatik kaydet
-document.getElementById("htmlCode").addEventListener("input", saveCode);
-document.getElementById("cssCode").addEventListener("input", saveCode);
-document.getElementById("jsCode").addEventListener("input", saveCode);
+editors.html.on("change", saveCode);
+editors.css.on("change", saveCode);
+editors.js.on("change", saveCode);
 function toggleConsole() {
 
     const output = document.getElementById("consoleOutput");
