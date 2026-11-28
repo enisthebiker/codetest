@@ -2,4 +2,5 @@ Test your HTML CSS JS codes. HTML, CSS ve JavaScript kodlarını burada deneyebi
 
 https://enisthebiker.github.io/codetest/
 
-<img width="727" height="421" alt="codetest" src="https://github.com/user-attachments/assets/f1f37aba-da36-45a1-94b4-80e8236645e8" />
+<img width="1830" height="826" alt="codetestjpg" src="https://github.com/user-attachments/assets/2e90642f-7fbe-439d-b474-0bb75b8f8f2e" />
+
