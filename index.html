@@ -579,7 +579,12 @@ function loadSavedCode() {
 }
 async function copyCode(id, button) {
 
-    const code = document.getElementById(id).value;
+    const editorMap = {
+        htmlCode: editors.html,
+        cssCode: editors.css,
+        jsCode: editors.js
+    };
+    const code = editorMap[id]?.getValue() ?? "";
 
     try {
         await navigator.clipboard.writeText(code);
