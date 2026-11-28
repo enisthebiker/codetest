@@ -52,6 +52,7 @@ select, button {
     background: var(--panel-light); color: var(--text); font: inherit; font-size: 13px;
 }
 select { padding: 0 30px 0 10px; }
+button.backbutton { color: #07131d; background: #555334; border-color: var(--accent); font-weight: 700; }
 button { min-height: 42px; padding: 4px 12px; line-height: 1.25; cursor: pointer; transition: background .15s, border-color .15s; }
 button:hover { border-color: var(--accent); background: #29394d; }
 button.primary { color: #07131d; background: var(--accent); border-color: var(--accent); font-weight: 700; }
@@ -131,6 +132,7 @@ footer { padding: 10px 20px 22px; color: #718197; text-align: center; font-size:
             </select>
         </div>
         <span class="spacer"></span>
+        <button class="backbutton" onclick="window.location.href='index.html'">↩ Geri<br>Back</button>
         <button class="primary" id="formatBtn" type="button">✨ Biçimlendir<br>Beautify</button>
         <button id="copyBtn" type="button">Kopyala<br>Copy</button>
         <button id="useOutputBtn" type="button">Çıktıyı girişe aktar<br>Move Output to Input</button>
